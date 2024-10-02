@@ -1,0 +1,15 @@
+{
+  "name": "task-tracker-cli",
+  "version": "1.0.0",
+  "description": "A simple CLI to track tasks",
+  "main": "index.js",
+  "bin": {
+    "task-cli": "./index.js"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "Rangga Raditya Putra Pratama",
+  "license": "ISC"
+}
