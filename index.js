@@ -14,30 +14,29 @@ if (!fs.existsSync(tasksFilePath)) {
 // Extract command and arguments from the command-line input
 const [, , command, ...args] = process.argv;
 
-// Function to load tasks from the JSON file
+// Load tasks from the JSON file
 function loadTasks() {
   try {
     const tasksData = fs.readFileSync(tasksFilePath, 'utf8');
     return tasksData ? JSON.parse(tasksData) : [];
   } catch (error) {
-    // If there is an error parsing the file, return an empty array
     return [];
   }
 }
 
-// Function to save tasks back to the JSON file
+// Save tasks to the JSON file
 function saveTasks(tasks) {
   fs.writeFileSync(tasksFilePath, JSON.stringify(tasks, null, 2));
 }
 
-// Function to add a new task
+// Add a new task with default status 'todo'
 function addTask(description) {
   const tasks = loadTasks();
   const newTask = {
-    id: tasks.length + 1, // Generate a new ID based on the task count
+    id: tasks.length + 1, // Auto-increment task ID based on current number of tasks
     description,
-    status: 'todo', // Default status is 'todo'
-    createdAt: new Date().toISOString(), // Record the current timestamp
+    status: 'todo',
+    createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
   tasks.push(newTask);
@@ -45,20 +44,20 @@ function addTask(description) {
   console.log(`Task added successfully (ID: ${newTask.id})`);
 }
 
-// Function to update an existing task
+// Update the description of an existing task by ID
 function updateTask(id, newDescription) {
   const tasks = loadTasks();
-  const task = tasks.find((t) => t.id === parseInt(id)); // Find the task by ID
+  const task = tasks.find((t) => t.id === parseInt(id));
   if (!task) {
-    return console.log('Task not found'); // Handle case where task is not found
+    return console.log('Task not found');
   }
-  task.description = newDescription; // Update the description
-  task.updatedAt = new Date().toISOString(); // Update the timestamp
-  saveTasks(tasks); // Save the updated task to the file
+  task.description = newDescription;
+  task.updatedAt = new Date().toISOString();
+  saveTasks(tasks);
   console.log('Task updated successfully');
 }
 
-// Function to delete a task by ID
+// Delete a task by ID
 function deleteTask(id) {
   const tasks = loadTasks();
   const taskIndex = tasks.findIndex((t) => t.id === parseInt(id));
@@ -69,30 +68,29 @@ function deleteTask(id) {
     return;
   }
 
-  tasks.splice(taskIndex, 1); // Remove the task from the array
-  saveTasks(tasks); // Save the updated task list to the file
+  tasks.splice(taskIndex, 1);
+  saveTasks(tasks);
   console.log('Task deleted successfully');
 }
 
-// Function to mark a task as 'in-progress' or 'done'
+// Mark a task as 'in-progress' or 'done'
 function markTask(id, status) {
   const tasks = loadTasks();
-  const task = tasks.find((t) => t.id === parseInt(id)); // Find the task by ID
+  const task = tasks.find((t) => t.id === parseInt(id));
   if (!task) {
-    return console.log('Task not found'); // Handle case where task is not found
+    return console.log('Task not found');
   }
-  task.status = status; // Update the status ('in-progress' or 'done')
-  task.updatedAt = new Date().toISOString(); // Update the timestamp
-  saveTasks(tasks); // Save the updated task to the file
+  task.status = status;
+  task.updatedAt = new Date().toISOString();
+  saveTasks(tasks);
   console.log(`Task marked as ${status}`);
 }
 
-// Function to list all tasks or tasks by a specific status
+// List all tasks or filter by status ('todo', 'in-progress', 'done')
 function listTasks(status) {
-  const validStatuses = ['todo', 'in-progress', 'done']; // Define valid statuses
+  const validStatuses = ['todo', 'in-progress', 'done'];
   const tasks = loadTasks();
 
-  // If a status is provided, check if it's valid
   if (status && !validStatuses.includes(status)) {
     console.log('Invalid status. Please use "todo", "in-progress", or "done".');
     return;
@@ -100,23 +98,20 @@ function listTasks(status) {
 
   let filteredTasks = tasks;
 
-  // Filter tasks by the provided status if it's valid
   if (status) {
     filteredTasks = tasks.filter((task) => task.status === status);
   }
 
-  // Check if there are tasks to display
   if (filteredTasks.length === 0) {
     console.log('No tasks found');
   } else {
-    // Display each task
     filteredTasks.forEach((task) => {
       console.log(`${task.id}. ${task.description} [${task.status}]`);
     });
   }
 }
 
-// Function to show help information
+// Show help information
 function showHelp() {
   console.log(`
     Task Tracker CLI
@@ -126,10 +121,10 @@ function showHelp() {
 
     Commands:
       add [task]                Add a new task
-      update [id] [new task]     Update an existing task
+      update [id] [new task]    Update an existing task
       delete [id]               Delete a task by ID
-      mark-in-progress [id]      Mark a task as in progress
-      mark-done [id]             Mark a task as done
+      mark-in-progress [id]     Mark a task as in progress
+      mark-done [id]            Mark a task as done
       list                      List all tasks
       list [status]             List tasks by status (todo, in-progress, done)
 
@@ -138,29 +133,29 @@ function showHelp() {
   `);
 }
 
-// Switch to determine which command was entered and execute the corresponding function
+// Handle command input
 switch (command) {
   case 'add':
-    addTask(args.join(' ')); // Add a new task
+    addTask(args.join(' '));
     break;
   case 'update':
-    updateTask(args[0], args.slice(1).join(' ')); // Update an existing task
+    updateTask(args[0], args.slice(1).join(' '));
     break;
   case 'delete':
-    deleteTask(args[0]); // Delete a task by ID
+    deleteTask(args[0]);
     break;
   case 'mark-in-progress':
-    markTask(args[0], 'in-progress'); // Mark a task as 'in-progress'
+    markTask(args[0], 'in-progress');
     break;
   case 'mark-done':
-    markTask(args[0], 'done'); // Mark a task as 'done'
+    markTask(args[0], 'done');
     break;
   case 'list':
-    listTasks(args[0]); // List all tasks or tasks by status
+    listTasks(args[0]);
     break;
   case '--help':
-    showHelp(); // Show help information
+    showHelp();
     break;
   default:
-    console.log('Unknown command. Use --help for usage information.'); // Handle unknown commands
+    console.log('Unknown command. Use --help for usage information.');
 }
